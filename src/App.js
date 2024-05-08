@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import NoteList from './NoteList';
+import NoteEditor from './NoteEditor';
+import './style.css'; // Импорт стилей
 
 function App() {
+  const [notes, setNotes] = useState([]);
+  const [currentNote, setCurrentNote] = useState(null);
+
+  const addNote = () => {
+    const newNote = { id: Date.now(), title: 'New Note', text: '' };
+    setNotes([...notes, newNote]);
+    setCurrentNote(newNote);
+  };
+
+  const updateNote = (id, title, text) => {
+    const updatedNotes = notes.map(note => {
+      if (note.id === id) {
+        return { ...note, title, text };
+      }
+      return note;
+    });
+    setNotes(updatedNotes);
+  };
+
+  const deleteNote = (id) => {
+    const updatedNotes = notes.filter(note => note.id !== id);
+    setNotes(updatedNotes);
+    setCurrentNote(null);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-container">
+      <button onClick={addNote}>Add Note</button>
+
+      <NoteList notes={notes} onNoteSelect={setCurrentNote} onNoteDelete={deleteNote} />
+      {currentNote && <NoteEditor note={currentNote} onSave={updateNote} />}
     </div>
   );
 }
